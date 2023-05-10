@@ -2,7 +2,7 @@
 Version=1.0
 Name=Pipewire xrdp modules
 Comment=Load Pipewire Modules for xrdp
-Exec=/usr/local/libexec/pipewire-module-xrdp/load_pw_modules.sh
+Exec=@pkglibexecdir@/load_pw_modules.sh
 Terminal=false
 Type=Application
 Categories=
