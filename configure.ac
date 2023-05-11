@@ -35,7 +35,7 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
 # Checks for libraries.
-PKG_CHECK_MODULES([PW], [libpipewire-0.3], [],
+PKG_CHECK_MODULES([PW], [libpipewire-0.3 >= 0.3.58], [],
         [AC_MSG_ERROR([please install libpipewire-0.3-dev or pipewire-devel])])
 PKG_CHECK_MODULES([SPA], [libspa-0.2], [],
         [AC_MSG_ERROR([please install libspa-0.2-dev or pipewire-devel])])

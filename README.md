@@ -4,19 +4,16 @@ Thanks to @Hiero32 who contributed this module.
 
 This module allows xrdp to generate sound on a pipewire-based system.
 
-# Sources
+Pipewire versions 0.3.58 and later are supported.
 
-These are the source files:-
+# Files
+## Sources
 - [src/module-xrdp-pipewire.c](src/module-xrdp-pipewire.c)
-    The module source. This is a heavily modified version of
-    src/modules/module-pipe-tunnel.c from pipewire 0.3.64
+    The module source.
 - [src/pw-cli_0358_mod.c](src/pw-cli_0358_mod.c)
-    This is src/tools/pw-cli.c from pipewire 0.3.58 modified to address
-    pipewire issue [#2709](https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/2709)
-    This file is only built on older pipewire systems. It is ignored for
-    pipewire 0.3.59 and later.
+    pw-cli for older systems running pipewire 0.3.58
 
-Other files:-
+## Other
 - [instfiles/load_pw_modules.sh](instfiles/load_pw_modules.sh)
     Shell script invoked when the desktop starts to load the pipewire
     module on xrdp connections.

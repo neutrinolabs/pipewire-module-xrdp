@@ -1,3 +1,10 @@
+/**
+ * xrdp pipewire module
+ *
+ * This is a modified version of src/modules/module-pipe-tunnel.c
+ * from pipewire 0.3.64
+ */
+
 /* PipeWire
  *
  * Copyright © 2021 Sanchayan Maity <sanchayan@asymptotic.io>
@@ -1022,6 +1029,3 @@ error:
 	impl_destroy(impl);
 	return res;
 }
-
-// compile and link
-// cc -o libpipewire-module-xrdp-pipewire.so module-xrdp-pipewire.c -shared -fPIC $(pkg-config --cflags libpipewire-0.3)
