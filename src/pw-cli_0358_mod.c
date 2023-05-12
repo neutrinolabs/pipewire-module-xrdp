@@ -1,3 +1,15 @@
+/**
+ * pw-cli.c for older systems
+ *
+ * This is src/tools/pw-cli.c from pipewire 0.3.58 modified to address
+ * pipewire issue #2709:-
+ *
+ * https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/2709
+ *
+ * This file is only built on older pipewire systems. It is ignored for
+ * pipewire 0.3.59 and later.
+ */
+
 /* PipeWire
  *
  * Copyright © 2018 Wim Taymans
