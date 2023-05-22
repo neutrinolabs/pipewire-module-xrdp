@@ -62,8 +62,10 @@ if [ -n "$XRDP_SESSION" -a -n "$XRDP_SOCKET_PATH" ]; then
     # set default sample rate = 44100, because xrdp uses it.
     pw-metadata -n settings 0 default.clock.rate 44100 >/dev/null
 
-    pactl set-default-sink xrdp-sink
-    pactl set-default-source xrdp-source
+    if command -v pactl >/dev/null; then
+        pactl set-default-sink xrdp-sink
+        pactl set-default-source xrdp-source
+    fi
 fi
 
 exit $status
