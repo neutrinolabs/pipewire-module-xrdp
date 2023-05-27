@@ -41,6 +41,7 @@
 #include <signal.h>
 #include <limits.h>
 #include <math.h>
+#include <time.h>
 
 #include <netinet/in.h>
 #include <netinet/tcp.h>
@@ -189,6 +190,7 @@ struct impl {
 	char *filename_source;
 	int fd_sink;
 	int fd_source;
+	uint64_t failed_connect_time;
 
 	struct pw_properties *stream_props_sink;
 	struct pw_properties *stream_props_source;
@@ -266,7 +268,7 @@ static int get_display_num_from_display(const char *display_text) {
 static int lsend(int fd, char *data, int bytes) {
     int sent = 0;
     while (sent < bytes) {
-        int error = send(fd, data + sent, bytes - sent, 0);
+        int error = send(fd, data + sent, bytes - sent, MSG_NOSIGNAL);
         if (error < 1)
             return error;
         sent += error;
@@ -411,8 +413,17 @@ static void set_socket_path(struct impl *impl) {
 
 static int conect_xrdp_socket(struct impl *impl, char *filename) {
     struct sockaddr_un s = { 0 };
+    struct timespec tm;
 
-	/* connect to xrdp unix domain socket */
+    if (impl->failed_connect_time != 0) {
+        clock_gettime(CLOCK_MONOTONIC, &tm);
+        //pw_log_debug("wait 1sec when connect error occurred. waiting %lld nS", (tm.tv_sec * 1000000000LL + tm.tv_nsec) - impl->failed_connect_time);
+        if ((tm.tv_sec * 1000000000LL + tm.tv_nsec) - impl->failed_connect_time < 1000000000LL) {
+            return -1;
+        }
+    }
+
+    /* connect to xrdp unix domain socket */
     int fd = socket(PF_LOCAL, SOCK_STREAM, 0);
     s.sun_family = AF_UNIX;
     strncpy(s.sun_path, filename, sizeof(s.sun_path)-1);
@@ -421,10 +432,13 @@ static int conect_xrdp_socket(struct impl *impl, char *filename) {
     if (connect(fd, (struct sockaddr *)&s, sizeof(struct sockaddr_un)) != 0) {
         pw_log_debug("Connect failed");
         close(fd);
-		fd = -1;
+        clock_gettime(CLOCK_MONOTONIC, &tm);
+        impl->failed_connect_time = tm.tv_sec * 1000000000LL + tm.tv_nsec;
+        fd = -1;
     } else {
-	    pw_log_info("Connected ok fd %d", fd);
-	}
+        impl->failed_connect_time = 0;
+        pw_log_info("Connected ok fd %d", fd);
+    }
     return fd;
 }
 
@@ -490,7 +504,7 @@ error:
 	pw_stream_queue_buffer(impl->stream_sink, buf);
 
     if (written_all != size_all) {
-        pw_log_warn("data_send: send failed sent %ld bytes %d", written_all, size_all);
+        //pw_log_warn("data_send: send failed sent %ld bytes %d", written_all, size_all);
     } else {
         //pw_log_warn("data_send: send OK n_datas:%d sent %ld bytes %d", buf->buffer->n_datas, written_all, size_all);
     }
@@ -527,7 +541,7 @@ static void capture_stream_process(void *data)
 
 	if (impl->fd_source == -1) {
 	    if ((impl->fd_source = conect_xrdp_socket(impl, impl->filename_source)) == -1)
-	        goto error;
+	        goto nodata;
 	}
 
 	if (!impl->want_src_data) {
