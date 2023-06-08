@@ -2125,6 +2125,7 @@ static bool parse(struct data *data, char *buf, char **error)
 	int n;
 	size_t i;
 	char *p, *cmd, *args;
+	char empty_arg[] = "";
 
 	if ((p = strchr(buf, '#')))
 		*p = '\0';
@@ -2139,7 +2140,7 @@ static bool parse(struct data *data, char *buf, char **error)
 		return true;
 
 	cmd = a[0];
-	args = n > 1 ? a[1] : "";
+	args = n > 1 ? a[1] : empty_arg;
 
 	for (i = 0; i < SPA_N_ELEMENTS(command_list); i++) {
 		if (spa_streq(command_list[i].name, cmd) ||
@@ -2265,6 +2266,7 @@ static void do_quit_on_signal(void *data, int signal_number)
 
 static void show_help(struct data *data, const char *name, bool error)
 {
+	char empty_arg[] = "";
 	fprintf(error ? stderr : stdout, _("%s [options] [command]\n"
 		"  -h, --help                            Show this help\n"
 		"      --version                         Show version\n"
@@ -2272,7 +2274,7 @@ static void show_help(struct data *data, const char *name, bool error)
 		"  -r, --remote                          Remote daemon name\n\n"),
 		name);
 
-	do_help(data, "help", "", NULL);
+	do_help(data, "help", empty_arg, NULL);
 }
 
 int main(int argc, char *argv[])

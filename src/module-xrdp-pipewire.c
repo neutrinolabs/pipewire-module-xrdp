@@ -368,7 +368,6 @@ static void set_socket_path(struct impl *impl) {
 
     const char *socket_dir;
     const char *socket_name;
-    char default_socket_name[64];
 
     socket_dir = getenv("XRDP_SOCKET_PATH");
     if (socket_dir == NULL || socket_dir[0] == '\0') {
@@ -999,8 +998,10 @@ int pipewire__module_init(struct pw_impl_module *module, const char *args)
 		goto error;
 	}
 
-	if (!impl->mode)
+	if (!impl->mode) {
+		res = -EINVAL;
 		goto error;
+	}
 
 	impl->core = pw_context_get_object(impl->context, PW_TYPE_INTERFACE_Core);
 	if (impl->core == NULL) {
