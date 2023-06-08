@@ -53,7 +53,7 @@
 #include <spa/utils/json.h>
 #include <spa/utils/ringbuffer.h>
 #include <spa/utils/dll.h>
-#include <spa/debug/pod.h>
+#include <spa/debug/types.h>
 #include <spa/pod/builder.h>
 #include <spa/param/audio/format-utils.h>
 #include <spa/param/latency-utils.h>
@@ -61,7 +61,6 @@
 
 #include <pipewire/impl.h>
 #include <pipewire/i18n.h>
-//#include <pipewire/private.h>
 
 /** \page page_module_pipe_tunnel PipeWire Module: Unix Pipe Tunnel
  *
@@ -168,7 +167,6 @@ static const struct spa_dict_item module_props[] = {
 
 struct impl {
 	struct pw_context *context;  // common
-//	struct pw_impl_module this;
 	uint32_t destroy_work_id;  // common
 
 #define MODE_XRDP_SINK		1
@@ -591,7 +589,6 @@ static void capture_stream_process(void *data)
 	}
 nodata:
     //pw_log_debug("nread:%ld. req:%d. %s", nread, req, req == bytes ? "":"req != bytes");
-error:
 
 	impl->leftover_count = d->chunk->size % impl->frame_size;
 	d->chunk->size -= impl->leftover_count;
@@ -931,12 +928,12 @@ int pipewire__module_init(struct pw_impl_module *module, const char *args)
 	if (impl->info.rate != 0 &&
 	    pw_properties_get(props, PW_KEY_NODE_RATE) == NULL)
 		pw_properties_setf(props, PW_KEY_NODE_RATE,
-				"1/%u", impl->info.rate),
+				"1/%u", impl->info.rate);
 
 	copy_props(impl->stream_props_sink, props, PW_KEY_NODE_RATE);
 
 	if ((str = pw_properties_get(props, "sink.node.latency")) != NULL)
-		pw_properties_setf(props, PW_KEY_NODE_LATENCY,	"%s/%u", str, impl->info.rate),
+		pw_properties_setf(props, PW_KEY_NODE_LATENCY,	"%s/%u", str, impl->info.rate);
 	copy_props(impl->stream_props_sink, props, PW_KEY_NODE_LATENCY);
 
 	// source
@@ -991,7 +988,7 @@ int pipewire__module_init(struct pw_impl_module *module, const char *args)
 	if (impl->info.rate != 0 &&
 	    pw_properties_get(props, PW_KEY_NODE_RATE) == NULL)
 		pw_properties_setf(props, PW_KEY_NODE_RATE,
-				"1/%u", impl->info.rate),
+				"1/%u", impl->info.rate);
 
 	copy_props(impl->stream_props_source, props, PW_KEY_NODE_RATE);
 
