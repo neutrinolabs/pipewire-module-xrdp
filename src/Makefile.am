@@ -7,8 +7,9 @@ endif
 
 modlibexec_LTLIBRARIES = libpipewire-module-xrdp-pipewire.la
 
+# _GNU_SOURCE needed for asprintf() declaration
 pw_cli_0358_mod_SOURCES = pw-cli_0358_mod.c
-pw_cli_0358_mod_CFLAGS =  $(PW_CFLAGS) $(SPA_CFLAGS)
+pw_cli_0358_mod_CFLAGS =  $(PW_CFLAGS) $(SPA_CFLAGS) -D_GNU_SOURCE
 pw_cli_0358_mod_LDFLAGS = $(PW_LIBS)
 
 libpipewire_module_xrdp_pipewire_la_SOURCES = module-xrdp-pipewire.c

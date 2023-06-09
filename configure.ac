@@ -80,6 +80,10 @@ fi
 
 AM_CONDITIONAL(USE_ALT_PW_CLI, [test "x$alt_pw_cli" = xyes])
 
+# configure compiler options and CFLAGS
+AX_CFLAGS_WARN_ALL
+AX_APPEND_COMPILE_FLAGS([-Wwrite-strings])
+
 AC_CONFIG_FILES([Makefile
                  src/Makefile
                  instfiles/Makefile])
