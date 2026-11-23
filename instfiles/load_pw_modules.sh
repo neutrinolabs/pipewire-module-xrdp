@@ -54,12 +54,22 @@ if [ -n "$XRDP_SESSION" -a -n "$XRDP_SOCKET_PATH" ]; then
 
     # enable both xrdp-sink ans xrdp-source
     $PWCLI -m -d load-module libpipewire-module-xrdp sink.node.latency=$QUANTUMVAL sink.stream.props={node.name=xrdp-sink} source.stream.props={node.name=xrdp-source} > /dev/null &
+    PWCLI_PID=$!
     # enable xrdp-sink only
     # $PWCLI -m -d load-module libpipewire-module-xrdp sink.node.latency=$QUANTUMVAL sink.stream.props={node.name=xrdp-sink} > /dev/null &
     # enable xrdp-source only
     # $PWCLI -m -d load-module libpipewire-module-xrdp source.stream.props={node.name=xrdp-source} > /dev/null &
 
     sleep 1
+
+    # Stop pw-cli when the X server of this session exits. A disconnected
+    # session keeps its X server, so audio stays available on reconnection.
+    X_SOCKET=/tmp/.X11-unix/X$(echo "$DISPLAY" | sed -e 's/^[^:]*://' -e 's/\..*//')
+    if [ -S "$X_SOCKET" ]; then
+        while [ -S "$X_SOCKET" ] && kill -0 $PWCLI_PID 2>/dev/null; do
+            sleep 5
+        done && kill $PWCLI_PID 2>/dev/null &
+    fi
 
     #increase the quantum(latency) value to reduce choppy audio
     # from PipeWire debian
